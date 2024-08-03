@@ -1,29 +1,24 @@
-import { mapValues, omit, toPath } from "lodash-es";
+import {mapValues, omit, toPath} from 'lodash-es';
 
 const omitInternal = (obj: unknown, pathArrays: string[][]) => {
   let currObj = obj;
 
   for (const pathArray of pathArrays) {
     const [keyToOmit, ...restPath] = pathArray;
-    if (currObj === null || typeof currObj !== "object" || keyToOmit == null) {
+    if (currObj === null || typeof currObj !== 'object' || keyToOmit == null) {
       continue;
     }
 
     if (Array.isArray(currObj)) {
       const keyInteger = Number.parseInt(keyToOmit, 10);
       const isArrayIndex =
-        Number.isInteger(keyInteger) &&
-        keyInteger >= 0 &&
-        keyInteger < currObj.length;
+        Number.isInteger(keyInteger) && keyInteger >= 0 && keyInteger < currObj.length;
       if (!isArrayIndex) {
         currObj = currObj.map((item) => omitInternal(item, pathArrays));
         continue;
       }
 
-      const newArray = [
-        ...currObj.slice(0, keyInteger),
-        ...currObj.slice(keyInteger + 1),
-      ];
+      const newArray = [...currObj.slice(0, keyInteger), ...currObj.slice(keyInteger + 1)];
       if (restPath.length > 0) {
         newArray[keyInteger] = omitInternal(currObj[keyInteger], [restPath]);
       }
